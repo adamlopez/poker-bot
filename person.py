@@ -21,8 +21,12 @@ class Card:
 
 class Player:
     STARTING_CHIPS = 100
+    def __repr__(self):
+        return (f'NAME:{self.name} CHIPS:{self.chips}')
 
-    def __init__(self,pos=0,hand=[],chips=STARTING_CHIPS):
-        self.pos = pos
+
+    def __init__(self,name=None,position=0,hand=[],chips=STARTING_CHIPS):
+        self.name = name
+        self.position = position
         self.hand = hand
         self.chips = chips
