@@ -17,7 +17,6 @@ HAND_RANKS = {'royal flush' : 1,
               'pair':9,
               'high card':10}
 
-[i for i in HAND_RANKS.keys()]
 
 class Session:
     ALL_CARDS = []
@@ -42,7 +41,7 @@ class Session:
 
     def showState(self):
         for player in self.players:
-            self.logger.info(f"Player {player.position}'s hand: {player.hand}")
+            self.logger.info(f"{player.name}'s hand: {player.hand}")
         self.logger.info(f"Community Cards: {self.COMMUNITY_CARDS}")
 
 
@@ -62,8 +61,9 @@ class Session:
 
     def getBestHands(self):
         ''' returns a string representation of the best hands each player holds.'''
-        handValues = {'value streak','suit streak',''}
+        results = {}
         for player in self.players:
+            kickers = dict(zip(HAND_RANKS.keys(),[[None for i in range(3)] for k in range(len(HAND_RANKS.keys()))]))
             cards = player.hand + self.COMMUNITY_CARDS
 
             handcounts = dict(zip(HAND_RANKS.keys(),[0 for i in range(len(HAND_RANKS.keys()))]))
@@ -86,20 +86,29 @@ class Session:
                         counted.append(card)
 
                 if valCount == 2:
+                    kickers['pair'][handcounts['pair']] = baseCard.value
                     handcounts['pair'] += 1
                     self.logger.info("pair!")
                 elif valCount == 3:
+                    kickers['trips'][handcounts['trips']] = baseCard.value
                     handcounts['trips'] += 1
                     self.logger.info('trips!')
                 elif valCount == 4:
+                    kickers['quads'][0] = baseCard.value
                     handcounts['quads'] += 1
+                    kickers[0] = baseCard.value
                     self.logger.info('quads!!')
 
-            if handcounts['pair'] >= 1:
+            if handcounts['pair'] > 1:
                 handcounts['two pair'] += 1
+                kickers['two pair'] = kickers['pair']
+                self.logger.info('two pair!')
 
             if handcounts['pair'] >= 1 and handcounts['trips'] >= 1:
                 handcounts['full house'] += 1
+                kickers['full house'][0] = kickers['trips'][0]
+                kickers['full house'][1] = kickers['pair'][0]
+                print(kickers)
                 self.logger.info('full house!')
 
             for v in suitcounts.values():
@@ -107,7 +116,7 @@ class Session:
                     handcounts['flush'] += 1
                     self.logger.info(f'flush!')
             sortedCards = sorted(cards,key=lambda card: card.value)
-            self.logger.debug(f'sorted deck: {sortedCards}')
+            self.logger.debug(f'sorted cards: {sortedCards}')
             if sortedCards[-1].value == 14: #count ace as lowest and highest
                 sortedCards.insert(0,Card(sortedCards[-1].suit,1))
                 self.logger.debug(f'sorted cards post insert: {sortedCards}')
@@ -137,20 +146,23 @@ class Session:
                 self.logger.debug(f'value streak: {streak}')
                 self.logger.debug(f'suit streak: {suitStreak}')
                 prevNum = card.value
-                print(f'prev suit: {prevSuit}')
+                self.logger.debug(f'prev suit: {prevSuit}')
                 if streak >= 5 and  suitStreak >= 5:
-                    self.logger.info(f'{card}-high straight flush!')
                     if card.value == 14:
                         self.logger.info(f'{card.suit} royal flush!!')
                         handcounts['royal flush'] = 1
-
+                    else:
+                        self.logger.info(f'{card}-high straight flush!')
                     handcounts['straight flush'] = 1
                 elif streak >= 5:
                     self.logger.debug(f'{card}-high straight!')
                     handcounts['straight'] = 1
 
-            self.logger.info(handcounts)
-        for k,v in handcounts.items():
-            if v > 1:
-                return k,v
-        return handcounts
+
+            for hand,freq in handcounts.items():
+                self.logger.info(f"{hand}:{freq}")
+                if freq > 0: #will automatically take the highest ranked hand
+                    results[player] = (hand,kickers[hand])
+                    break
+
+        return results

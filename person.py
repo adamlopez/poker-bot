@@ -10,7 +10,7 @@ class Card:
         self.visible = visible
 
     def __repr__(self):
-        return self.suit + str(self.value)
+        return str(self.value) + self.suit
 
     def __eq__(self,other):
         if isinstance(other,Card):
@@ -22,7 +22,7 @@ class Card:
 class Player:
     STARTING_CHIPS = 100
     def __repr__(self):
-        return (f'NAME:{self.name} CHIPS:{self.chips}')
+        return str(self.name)
 
 
     def __init__(self,name=None,position=0,hand=[],chips=STARTING_CHIPS):
