@@ -2,7 +2,7 @@ import time
 start = time.clock()
 import datetime
 import random
-
+from enum import Enum
 class Card:
     def __init__(self,suit,value,visible=False):
         self.value = value
@@ -30,3 +30,19 @@ class Player:
         self.position = position
         self.hand = hand
         self.chips = chips
+
+class HandValue(Enum):
+    """
+    The following defines the possible hands a player can have.
+    """
+    #keep these sorted by best to worst hand
+    ROYAL_FLUSH = 1
+    STRAIGHT_FLUSH = 2
+    QUADS= 3
+    FULL_HOUSE= 4
+    FLUSH= 5
+    STRAIGHT= 6
+    TRIPS= 7
+    TWO_PAIR= 8
+    PAIR= 9
+    HIGH_CARD= 10

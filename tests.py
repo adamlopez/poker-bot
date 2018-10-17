@@ -1,10 +1,12 @@
 import time
 start = time.perf_counter()
-from objects import Card, Player
-from session import Session
-from logger import getLogger
 import sys
 import pytest
+
+from logger import getLogger
+from objects import Card, Player, HandValue as HandVal
+from session import Session
+
 logger = getLogger()
 
 def test_high_card():
@@ -26,10 +28,13 @@ def test_high_card():
     sesh.COMMUNITY_CARDS[4] = Card('C',13)
     sesh.showState()
     res = sesh.getBestHands()
-    assert res[sesh.players[0]][0] == 'high card'
-    assert res[sesh.players[0]][1] == [14, 13, 12, 10, 9]
-    assert res[sesh.players[1]][0] == 'high card'
-    assert res[sesh.players[1]][1] == [13, 10, 9, 6, 5]
+    assert res[sesh.players[0]][0] == HandVal.HIGH_CARD
+    assert res[sesh.players[0]][1] == [Card('S', 14), Card('C', 13),
+                                       Card('H', 12), Card('D', 10),
+                                       Card('S', 9)]
+    assert res[sesh.players[1]][0] == HandVal.HIGH_CARD
+    assert res[sesh.players[1]][1] == [Card('C', 13), Card('D', 10),
+                                       Card('S', 9), Card('D', 6), Card('C', 5)]
 
 
 
@@ -52,8 +57,8 @@ def test_full_house_pair():
     sesh.COMMUNITY_CARDS[4] = Card('C',12)
     sesh.showState()
     res = sesh.getBestHands()
-    assert res[sesh.players[0]][0] == 'full house'
-    assert res[sesh.players[1]][0] == 'full house'
+    assert res[sesh.players[0]][0] == HandVal.FULL_HOUSE
+    assert res[sesh.players[1]][0] == HandVal.FULL_HOUSE
 
 def test_pockets():
     sesh = Session(logger,playerCount=2)
@@ -71,8 +76,8 @@ def test_pockets():
     sesh.COMMUNITY_CARDS[3] = Card('D',7)
     sesh.COMMUNITY_CARDS[4] = Card('C',13)
     res = sesh.getBestHands()
-    assert res[sesh.players[0]][0] == 'pair'
-    assert res[sesh.players[1]][0] == 'pair'
+    assert res[sesh.players[0]][0] == HandVal.PAIR
+    assert res[sesh.players[1]][0] == HandVal.PAIR
 
 def test_flush_1():
     sesh = Session(logger,playerCount=2)
@@ -91,8 +96,8 @@ def test_flush_1():
     sesh.COMMUNITY_CARDS[3] = Card('D',7)
     sesh.COMMUNITY_CARDS[4] = Card('D',12)
     res = sesh.getBestHands()
-    assert res[sesh.players[0]][0] == 'two pair'
-    assert res[sesh.players[1]][0] == 'flush'
+    assert res[sesh.players[0]][0] == HandVal.TWO_PAIR
+    assert res[sesh.players[1]][0] == HandVal.FLUSH
 
 def test_straight_1():
     sesh = Session(logger,playerCount=2)
@@ -110,8 +115,8 @@ def test_straight_1():
     sesh.COMMUNITY_CARDS[3] = Card('D',7)
     sesh.COMMUNITY_CARDS[4] = Card('C',12)
     res = sesh.getBestHands()
-    assert res[sesh.players[0]][0] == 'straight'
-    assert res[sesh.players[1]][0] == 'two pair'
+    assert res[sesh.players[0]][0] == HandVal.STRAIGHT
+    assert res[sesh.players[1]][0] == HandVal.TWO_PAIR
 
 def test_ace_high_straight():
     sesh = Session(logger,playerCount=2)
@@ -129,8 +134,8 @@ def test_ace_high_straight():
     sesh.COMMUNITY_CARDS[3] = Card('D',7)
     sesh.COMMUNITY_CARDS[4] = Card('C',10)
     res = sesh.getBestHands()
-    assert res[sesh.players[0]][0] == 'straight'
-    assert res[sesh.players[1]][0] == 'pair'
+    assert res[sesh.players[0]][0] == HandVal.STRAIGHT
+    assert res[sesh.players[1]][0] == HandVal.PAIR
 
 def test_ace_low_straight():
     sesh = Session(logger,playerCount=2)
@@ -148,8 +153,8 @@ def test_ace_low_straight():
     sesh.COMMUNITY_CARDS[3] = Card('D',9)
     sesh.COMMUNITY_CARDS[4] = Card('C',10)
     res = sesh.getBestHands()
-    assert res[sesh.players[0]][0] == 'straight'
-    assert res[sesh.players[1]][0] == 'pair'
+    assert res[sesh.players[0]][0] == HandVal.STRAIGHT
+    assert res[sesh.players[1]][0] == HandVal.PAIR
 
 def test_straight_flush_1():
     sesh = Session(logger,playerCount=2)
@@ -167,8 +172,8 @@ def test_straight_flush_1():
     sesh.COMMUNITY_CARDS[3] = Card('D',6)
     sesh.COMMUNITY_CARDS[4] = Card('C',10)
     res = sesh.getBestHands()
-    assert res[sesh.players[0]][0] == 'straight flush'
-    assert res[sesh.players[1]][0] == 'pair'
+    assert res[sesh.players[0]][0] == HandVal.STRAIGHT_FLUSH
+    assert res[sesh.players[1]][0] == HandVal.PAIR
 
 def test_straight_flush_2():
     sesh = Session(logger,playerCount=2)
@@ -186,8 +191,8 @@ def test_straight_flush_2():
     sesh.COMMUNITY_CARDS[3] = Card('D',7)
     sesh.COMMUNITY_CARDS[4] = Card('C',10)
     res = sesh.getBestHands()
-    assert res[sesh.players[0]][0] == 'pair'
-    assert res[sesh.players[1]][0] == 'straight flush'
+    assert res[sesh.players[0]][0] == HandVal.PAIR
+    assert res[sesh.players[1]][0] == HandVal.STRAIGHT_FLUSH
 
 def test_royal_flush_1():
     sesh = Session(logger,playerCount=2)
@@ -206,8 +211,8 @@ def test_royal_flush_1():
     sesh.COMMUNITY_CARDS[3] = Card('D',7)
     sesh.COMMUNITY_CARDS[4] = Card('D',13)
     res = sesh.getBestHands()
-    assert res[sesh.players[0]][0] == 'royal flush'
-    assert res[sesh.players[1]][0] == 'flush'
+    assert res[sesh.players[0]][0] == HandVal.ROYAL_FLUSH
+    assert res[sesh.players[1]][0] == HandVal.FLUSH
 
 def test_royal_flush_2():
     sesh = Session(logger,playerCount=2)
@@ -225,8 +230,8 @@ def test_royal_flush_2():
     sesh.COMMUNITY_CARDS[3] = Card('D',7)
     sesh.COMMUNITY_CARDS[4] = Card('D',13)
     res = sesh.getBestHands()
-    assert res[sesh.players[0]][0] == 'royal flush'
-    assert res[sesh.players[1]][0] == 'high card'
+    assert res[sesh.players[0]][0] == HandVal.ROYAL_FLUSH
+    assert res[sesh.players[1]][0] == HandVal.HIGH_CARD
 
 if __name__ == '__main__':
     import pytest
