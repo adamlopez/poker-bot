@@ -26,12 +26,11 @@ class Session:
         self.players = []
         for i in range(playerCount):
             self.players.append(Player(position=i))
-            print(self.players)
 
     def getGameOutcome(self):
         outcomes = []
 
-    def showState(self) -> None:
+    def logState(self) -> None:
         for player in self.players:
             self.log.info(f"{player.name}'s hand: {player.hand}")
         self.log.info(f"Community Cards: {self.COMMUNITY_CARDS}")
@@ -148,8 +147,6 @@ class Session:
                     prevSuit = [card.suit]
 
                 #append high cards to fill the kickers array
-
-
                 self.log.debug(f'value streak: {streak}')
                 self.log.debug(f'suit streak: {suitStreak}')
                 prevNum = card.value
