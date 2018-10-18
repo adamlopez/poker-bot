@@ -26,7 +26,7 @@ def test_high_card():
     sesh.COMMUNITY_CARDS[2] = Card('C',5)
     sesh.COMMUNITY_CARDS[3] = Card('D',3)
     sesh.COMMUNITY_CARDS[4] = Card('C',13)
-    sesh.showState()
+    sesh.logState()
     res = sesh.getBestHands()
     assert res[sesh.players[0]][0] == HandVal.HIGH_CARD
     assert res[sesh.players[0]][1] == [Card('S', 14), Card('C', 13),
@@ -46,8 +46,27 @@ def test_full_house_pair():
     sesh.newGame()
     sesh.players[0].hand[0] = Card('H',12)
     sesh.players[0].hand[1] = Card('S',12)
-
     sesh.players[1].hand[0] = Card('C',10)
+    sesh.players[1].hand[1] = Card('D',8)
+    sesh.COMMUNITY_CARDS[0] = Card('D',10)
+    sesh.COMMUNITY_CARDS[1] = Card('S',10)
+    sesh.COMMUNITY_CARDS[2] = Card('C',8)
+    sesh.COMMUNITY_CARDS[3] = Card('D',7)
+    sesh.COMMUNITY_CARDS[4] = Card('C',12)
+    res = sesh.getBestHands()
+    assert res[sesh.players[0]][0] == HandVal.FULL_HOUSE
+    assert res[sesh.players[1]][0] == HandVal.FULL_HOUSE
+
+def test_full_house2():
+    sesh = Session(logger,playerCount=2)
+    players = ['Adam','Verina']
+    for i in range(len(players)):
+        sesh.players[i].name = players[i]
+    sesh.newGame()
+    sesh.players[0].hand[0] = Card('H',12)
+    sesh.players[0].hand[1] = Card('C',10)
+
+    sesh.players[1].hand[0] = Card('H',10)
     sesh.players[1].hand[1] = Card('D',8)
 
     sesh.COMMUNITY_CARDS[0] = Card('D',10)
@@ -55,10 +74,38 @@ def test_full_house_pair():
     sesh.COMMUNITY_CARDS[2] = Card('C',8)
     sesh.COMMUNITY_CARDS[3] = Card('D',7)
     sesh.COMMUNITY_CARDS[4] = Card('C',12)
-    sesh.showState()
     res = sesh.getBestHands()
     assert res[sesh.players[0]][0] == HandVal.FULL_HOUSE
+    assert res[sesh.players[0]][1][0] == 10
+    assert res[sesh.players[0]][1][1] == 12
     assert res[sesh.players[1]][0] == HandVal.FULL_HOUSE
+    assert res[sesh.players[1]][1][0] == 10
+    assert res[sesh.players[1]][1][1] == 8
+
+def test_full_house3():
+    sesh = Session(logger,playerCount=2)
+    players = ['Adam','Verina']
+    for i in range(len(players)):
+        sesh.players[i].name = players[i]
+    sesh.newGame()
+    sesh.players[0].hand[0] = Card('H',12)
+    sesh.players[0].hand[1] = Card('C',10)
+
+    sesh.players[1].hand[0] = Card('H',10)
+    sesh.players[1].hand[1] = Card('D',8)
+
+    sesh.COMMUNITY_CARDS[0] = Card('D',12)
+    sesh.COMMUNITY_CARDS[1] = Card('S',10)
+    sesh.COMMUNITY_CARDS[2] = Card('C',8)
+    sesh.COMMUNITY_CARDS[3] = Card('D',8)
+    sesh.COMMUNITY_CARDS[4] = Card('C',12)
+    res = sesh.getBestHands()
+    assert res[sesh.players[0]][0] == HandVal.FULL_HOUSE
+    assert res[sesh.players[0]][1][0] == 12
+    assert res[sesh.players[0]][1][1] == 10
+    assert res[sesh.players[1]][0] == HandVal.FULL_HOUSE
+    assert res[sesh.players[1]][1][0] == 8
+    assert res[sesh.players[1]][1][1] == 10
 
 def test_pockets():
     sesh = Session(logger,playerCount=2)
@@ -234,5 +281,6 @@ def test_royal_flush_2():
     assert res[sesh.players[1]][0] == HandVal.HIGH_CARD
 
 if __name__ == '__main__':
-    import pytest
-    pytest.main(['tests.py'])
+    test_full_house2()
+    # import pytest
+    # pytest.main(['tests.py'])
