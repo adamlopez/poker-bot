@@ -1,44 +1,47 @@
-from objects import Card, Player, HandValue as HandVal
+""" Holds the Session class of a poker game.
+    the session is responsible for encapsulating the logic and rules of the game.
+"""
+
 import itertools
-import time
 from random import shuffle
 from collections import deque
-from typing import List, Dict
-SUITS = ['H','D','S','C']
+from typing import List
+from objects import Card, Player, HandValue as HandVal
+SUITS = ['H', 'D', 'S', 'C']
 
-CARDS = [i for i in range(2,15)]
+CARDS = [i for i in range(2, 15)]
 
 
 
 
 class Session:
     ALL_CARDS = []
-    for i in range(1,14):
+    for i in range(1, 14):
         for suit in SUITS:
-            ALL_CARDS.append(Card(suit,i))
-    POSSIBLE_TABLES = list(itertools.combinations(ALL_CARDS,5))
+            ALL_CARDS.append(Card(suit, i))
+    POSSIBLE_TABLES = list(itertools.combinations(ALL_CARDS, 5))
 
-    def __init__(self,log,playerCount=2):
+    def __init__(self, log, playerCount=2):
         self.log = log
         self.log.info('New session started.')
-        self.COMMUNITY_CARDS = []
+        self.community_cards = []
         self.deck = deque(self.ALL_CARDS)
         self.players = []
         for i in range(playerCount):
             self.players.append(Player(position=i))
 
-    def getGameOutcome(self):
-        outcomes = []
+    def get_game_outcome(self):
+        pass
 
-    def logState(self) -> None:
+    def log_state(self) -> None:
         for player in self.players:
             self.log.info(f"{player.name}'s hand: {player.hand}")
-        self.log.info(f"Community Cards: {self.COMMUNITY_CARDS}")
+        self.log.info(f"Community Cards: {self.community_cards}")
 
 
-    def newGame(self):
+    def setup_game(self):
         """starts a new game by resetting all Session attributes as needed."""
-        self.COMMUNITY_CARDS = []
+        self.community_cards = []
         self.log.info('shuffling...')
         shuffle(self.deck)
         #assign cards to players hands
@@ -46,17 +49,17 @@ class Session:
             player.hand = []
             player.hand.append(self.deck.pop())
             player.hand.append(self.deck.pop())
-        for i in range(5):
-            self.COMMUNITY_CARDS.append(self.deck.pop())
+        for _ in range(5):
+            self.community_cards.append(self.deck.pop())
 
-    def _getHighCards(self, player_num: int, num_cards) -> List[Card]:
+    def _get_high_cards(self, player_num: int, num_cards) -> List[Card]:
         """returns a list of the <num_cards> highest cards between player
         <player_num> and the community cards.
         """
-        ls = self.players[player_num].hand + self.COMMUNITY_CARDS,
-        sortedCards = sorted(ls, key=lambda card: card.value)
+        all_cards = self.players[player_num].hand + self.community_cards
+        sorted_cards = sorted(all_cards, key=lambda card: card.value)
         idx = num_cards * -1
-        kickers[HandVal.HIGH_CARD] = sortedCards[idx:][::-1]
+        return sorted_cards[idx:][::-1]
 
     def _compute_pair_frequencies(self, player, handcounts,
                                   suitcounts, kickers) -> None:
@@ -65,27 +68,27 @@ class Session:
         """
         # check for pair, trips and quads
         counted = []
-        cards = player.hand + self.COMMUNITY_CARDS
-        for baseCard in cards:
-            suitcounts[baseCard.suit] += 1
-            valCount = 1
+        cards = player.hand + self.community_cards
+        for base_card in cards:
+            suitcounts[base_card.suit] += 1
+            val_count = 1
             #create copy of list with base card removed
-            withoutBase = [x for x in cards if x != baseCard]
-            for card in withoutBase:
-                if baseCard.value == card.value and baseCard not in counted:
-                    valCount += 1
+            without_base = [x for x in cards if x != base_card]
+            for card in without_base:
+                if base_card.value == card.value and base_card not in counted:
+                    val_count += 1
                     counted.append(card)
 
-            if valCount == 2:
-                kickers[HandVal.PAIR][handcounts[HandVal.PAIR]] = baseCard.value
+            if val_count == 2:
+                kickers[HandVal.PAIR][handcounts[HandVal.PAIR]] = base_card.value
                 handcounts[HandVal.PAIR] += 1
                 self.log.info(f"pair! ({player})")
-            elif valCount == 3:
-                kickers[HandVal.TRIPS][handcounts[HandVal.TRIPS]] = baseCard.value
+            elif val_count == 3:
+                kickers[HandVal.TRIPS][handcounts[HandVal.TRIPS]] = base_card.value
                 handcounts[HandVal.TRIPS] += 1
                 self.log.info(f'trips! ({player})')
-            elif valCount == 4:
-                kickers[HandVal.QUADS][0:4] = baseCard.value
+            elif val_count == 4:
+                kickers[HandVal.QUADS][0:4] = base_card.value
                 handcounts[HandVal.QUADS] += 1
                 self.log.info(f'quads! ({player})')
 
@@ -101,63 +104,66 @@ class Session:
             kickers[HandVal.FULL_HOUSE][1] = kickers[HandVal.PAIR][0]
             self.log.info(f'full house! ({player})')
 
-    def getBestHands(self):
+    # FIXME: needs to be broken up
+    def get_best_hands(self):
         """returns a string representation of the best hands
-            each player holds."""
+            each player holds. with the kcikers sorted from highest  to lowest.
+        """
         results = {}
         for player in self.players:
             empties = [[0 for i in range(5)] for k in range(len(HandVal))]
             kickers = dict(zip(HandVal, empties))
-            cards = player.hand + self.COMMUNITY_CARDS
+            cards = player.hand + self.community_cards
             handcounts = dict(zip(HandVal, [0 for i in range(len(HandVal))]))
-            suitcounts = dict(zip(SUITS,[0 for i in range(len(SUITS))]))
+            suitcounts = dict(zip(SUITS, [0 for i in range(len(SUITS))]))
 
             #high card
-            sortedCards = sorted(player.hand + self.COMMUNITY_CARDS,
-                                key=lambda card: card.value)
-            handcounts[HandVal.HIGH_CARD] = sortedCards[-1].value
-            kickers[HandVal.HIGH_CARD] = sortedCards[-5:][::-1]
+            sorted_cards = sorted(player.hand + self.community_cards,
+                                  key=lambda card: card.value)
+            handcounts[HandVal.HIGH_CARD] = sorted_cards[-1].value
+            kickers[HandVal.HIGH_CARD] = sorted_cards[-5:][::-1]
 
             self._compute_pair_frequencies(player, handcounts, suitcounts, kickers)
 
-            for v in suitcounts.values():
-                if v >= 5:
+            for suit, freq in suitcounts.items():
+                if freq >= 5:
                     handcounts[HandVal.FLUSH] += 1
                     self.log.info(f'flush! ({player})')
-            sortedCards = sorted(cards,key=lambda card: card.value)
-            self.log.debug(f'sorted cards: {sortedCards}')
-            if sortedCards[-1].value == 14: #count ace as lowest and highest
-                sortedCards.insert(0,Card(sortedCards[-1].suit,1))
-                self.log.debug(f'sorted cards post insert: {sortedCards}')
-            prevNum = -1
-            suitStreak = 0
+            sorted_cards = sorted(cards, key=lambda card: card.value)
+            self.log.debug(f'sorted cards: {sorted_cards}')
+            if sorted_cards[-1].value == 14: #count ace as lowest and highest
+                sorted_cards.insert(0, Card(sorted_cards[-1].suit, 1))
+                self.log.debug(f'sorted cards post insert: {sorted_cards}')
+            # TODO:make this standalone helper method
+            prev_num = -1
+            suit_streak = 0
             streak = 1
-            prevSuit = [sortedCards[0].suit]
-            for card in sortedCards:
+            prev_suit = [sorted_cards[0].suit]
+            for card in sorted_cards:
                 self.log.debug(f'\ncard: {card}')
-                if prevNum + 1 == card.value:
+                if prev_num + 1 == card.value:
                     streak += 1
-                    for suit in prevSuit:
+                    for suit in prev_suit:
                         if suit == card.suit:
-                            suitStreak = suitStreak + 1
-                            prevSuit = [suit]
+                            suit_streak = suit_streak + 1
+                            prev_suit = [suit]
                             break
-                        suitStreak = 1
-                elif prevNum == card.value:
+                        suit_streak = 1
+                elif prev_num == card.value:
                     streak = streak
-                    suitStreak = suitStreak
-                    prevSuit.append(card.suit)
+                    suit_streak = suit_streak
+                    prev_suit.append(card.suit)
                 else:
                     streak = 1
-                    suitStreak = 1
-                    prevSuit = [card.suit]
+                    suit_streak = 1
+                    prev_suit = [card.suit]
 
                 #append high cards to fill the kickers array
                 self.log.debug(f'value streak: {streak}')
-                self.log.debug(f'suit streak: {suitStreak}')
-                prevNum = card.value
-                self.log.debug(f'prev suit: {prevSuit}')
-                if streak >= 5 and  suitStreak >= 5:
+                self.log.debug(f'suit streak: {suit_streak}')
+                prev_num = card.value
+                self.log.debug(f'prev suit: {prev_suit}')
+                if streak >= 5 and  suit_streak >= 5:
                     if card.value == 14:
                         self.log.info(f'{card.suit} royal flush! ({player})')
                         range_ = reversed(range(card.value-4, card.value+1))
@@ -168,6 +174,15 @@ class Session:
                     range_ = reversed(range(card.value-4, card.value+1))
                     kickers[HandVal.STRAIGHT_FLUSH] = [i for i in range_]
                     handcounts[HandVal.STRAIGHT_FLUSH] = 1
+                elif suit_streak >= 5:
+                    inc = 0
+                    for card_ in sorted_cards[::-1]:
+                        self.log.debug(card_)
+                        self.log.debug(suit)
+                        if card_.suit == suit:
+                            kickers[HandVal.FLUSH][inc] = card_.value
+                            inc += 1
+                    print(kickers[HandVal.FLUSH])
                 elif streak >= 5:
                     self.log.debug(f'{card}-high straight! ({player})')
                     handcounts[HandVal.STRAIGHT] = 1
@@ -175,10 +190,10 @@ class Session:
                     kickers[HandVal.STRAIGHT] = [i for i in range_]
 
 
-            for hand,freq in handcounts.items():
+            for hand, freq in handcounts.items():
                 self.log.debug(f"{hand}:{freq}")
                 if freq > 0: #will automatically take the highest ranked hand
-                    results[player] = (hand,kickers[hand])
+                    results[player] = (hand, kickers[hand])
                     break
 
         return results
