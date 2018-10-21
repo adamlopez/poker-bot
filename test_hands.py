@@ -8,8 +8,8 @@ LOGGER = getLogger()
 def test_high_card():
     sesh = Session(LOGGER, playerCount=2)
     players = ['Adam', 'Verina']
-    for i in enumerate(players):
-        sesh.players[i].name = players[i]
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
     sesh.setup_game()
     sesh.players[0].hand[0] = Card('H', 12)
     sesh.players[0].hand[1] = Card('S', 14)
@@ -36,8 +36,8 @@ def test_high_card():
 def test_full_house_pair():
     sesh = Session(LOGGER, playerCount=2)
     players = ['Adam', 'Verina']
-    for i in enumerate(players):
-        sesh.players[i].name = players[i]
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
     sesh.setup_game()
     sesh.players[0].hand[0] = Card('H', 12)
     sesh.players[0].hand[1] = Card('S', 12)
@@ -55,8 +55,8 @@ def test_full_house_pair():
 def test_full_house2():
     sesh = Session(LOGGER, playerCount=2)
     players = ['Adam', 'Verina']
-    for i in enumerate(players):
-        sesh.players[i].name = players[i]
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
     sesh.setup_game()
     sesh.players[0].hand[0] = Card('H', 12)
     sesh.players[0].hand[1] = Card('C', 10)
@@ -80,8 +80,8 @@ def test_full_house2():
 def test_full_house3():
     sesh = Session(LOGGER, playerCount=2)
     players = ['Adam', 'Verina']
-    for i in enumerate(players):
-        sesh.players[i].name = players[i]
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
     sesh.setup_game()
     sesh.players[0].hand[0] = Card('H', 12)
     sesh.players[0].hand[1] = Card('C', 10)
@@ -103,8 +103,8 @@ def test_full_house3():
 def test_pockets():
     sesh = Session(LOGGER, playerCount=2)
     players = ['Adam', 'Verina']
-    for i in enumerate(players):
-        sesh.players[i].name = players[i]
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
     sesh.setup_game()
     sesh.players[0].hand[0] = Card('H', 12)
     sesh.players[0].hand[1] = Card('S', 12)
@@ -123,8 +123,8 @@ def test_pockets():
 def test_flush_1():
     sesh = Session(LOGGER, playerCount=2)
     players = ['Adam', 'Verina']
-    for i in enumerate(players):
-        sesh.players[i].name = players[i]
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
     sesh.setup_game()
     sesh.players[0].hand[0] = Card('H', 12)
     sesh.players[0].hand[1] = Card('S', 13)
@@ -153,8 +153,8 @@ def test_flush_1():
 def test_straight_1():
     sesh = Session(LOGGER, playerCount=2)
     players = ['Adam', 'Verina']
-    for i in enumerate(players):
-        sesh.players[i].name = players[i]
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
     sesh.setup_game()
     sesh.players[0].hand[0] = Card('S', 12)
     sesh.players[0].hand[1] = Card('C', 11)
@@ -177,8 +177,8 @@ def test_straight_1():
 def test_ace_high_straight():
     sesh = Session(LOGGER, playerCount=2)
     players = ['Adam', 'Verina']
-    for i in enumerate(players):
-        sesh.players[i].name = players[i]
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
     sesh.setup_game()
     sesh.players[0].hand[0] = Card('S', 14)
     sesh.players[0].hand[1] = Card('C', 2)
@@ -198,8 +198,8 @@ def test_ace_high_straight():
 def test_ace_low_straight():
     sesh = Session(LOGGER, playerCount=2)
     players = ['Adam', 'Verina']
-    for i in enumerate(players):
-        sesh.players[i].name = players[i]
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
     sesh.setup_game()
     sesh.players[0].hand[0] = Card('S', 14)
     sesh.players[0].hand[1] = Card('C', 2)
@@ -220,8 +220,8 @@ def test_ace_low_straight():
 def test_straight_flush_1():
     sesh = Session(LOGGER, playerCount=2)
     players = ['Adam', 'Verina']
-    for i in enumerate(players):
-        sesh.players[i].name = players[i]
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
     sesh.setup_game()
     sesh.players[0].hand[0] = Card('S', 14)
     sesh.players[0].hand[1] = Card('S', 2)
@@ -242,8 +242,8 @@ def test_straight_flush_1():
 def test_straight_flush_2():
     sesh = Session(LOGGER, playerCount=2)
     players = ['Adam', 'Verina']
-    for i in enumerate(players):
-        sesh.players[i].name = players[i]
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
     sesh.setup_game()
     sesh.players[0].hand[0] = Card('D', 10)
     sesh.players[0].hand[1] = Card('D', 8)
@@ -263,8 +263,8 @@ def test_straight_flush_2():
 def test_royal_flush_1():
     sesh = Session(LOGGER, playerCount=2)
     players = ['Adam', 'Verina']
-    for i in enumerate(players):
-        sesh.players[i].name = players[i]
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
     sesh.setup_game()
     sesh.players[0].hand[0] = Card('D', 10)
     sesh.players[0].hand[1] = Card('D', 12)
@@ -287,8 +287,8 @@ def test_royal_flush_1():
 def test_royal_flush_2():
     sesh = Session(LOGGER, playerCount=2)
     players = ['Adam', 'Verina']
-    for i in enumerate(players):
-        sesh.players[i].name = players[i]
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
     sesh.setup_game()
     sesh.players[0].hand[0] = Card('D', 10)
     sesh.players[0].hand[1] = Card('D', 12)

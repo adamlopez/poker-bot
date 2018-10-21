@@ -7,11 +7,9 @@ from random import shuffle
 from collections import deque
 from typing import List
 from objects import Card, Player, HandValue as HandVal
+
 SUITS = ['H', 'D', 'S', 'C']
-
 CARDS = [i for i in range(2, 15)]
-
-
 
 
 class Session:
@@ -111,11 +109,11 @@ class Session:
         """
         results = {}
         for player in self.players:
-            empties = [[0 for i in range(5)] for k in range(len(HandVal))]
+            empties = [[0 for i in range(5)] for k in enumerate(HandVal)]
             kickers = dict(zip(HandVal, empties))
             cards = player.hand + self.community_cards
-            handcounts = dict(zip(HandVal, [0 for i in range(len(HandVal))]))
-            suitcounts = dict(zip(SUITS, [0 for i in range(len(SUITS))]))
+            handcounts = dict(zip(HandVal, [0 for i in enumerate(HandVal)]))
+            suitcounts = dict(zip(SUITS, [0 for i in enumerate(SUITS)]))
 
             #high card
             sorted_cards = sorted(player.hand + self.community_cards,
