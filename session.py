@@ -120,15 +120,21 @@ class Session:
                                   key=lambda card: card.value)
             handcounts[HandVal.HIGH_CARD] = sorted_cards[-1].value
             kickers[HandVal.HIGH_CARD] = sorted_cards[-5:][::-1]
-
             self._compute_pair_frequencies(player, handcounts, suitcounts, kickers)
-
+            sorted_cards = sorted(cards, key=lambda card: card.value)
+            self.log.debug(f'sorted cards: {sorted_cards}')
             for suit, freq in suitcounts.items():
                 if freq >= 5:
                     handcounts[HandVal.FLUSH] += 1
                     self.log.info(f'flush! ({player})')
-            sorted_cards = sorted(cards, key=lambda card: card.value)
-            self.log.debug(f'sorted cards: {sorted_cards}')
+                    inc = 0
+                    self.log.debug(sorted_cards[::-1])
+                    for card_ in sorted_cards[::-1]:
+                        if card_.suit == suit:
+                            kickers[HandVal.FLUSH][inc] = card_.value
+                            inc += 1
+                        if inc == 5:
+                            break
             if sorted_cards[-1].value == 14: #count ace as lowest and highest
                 sorted_cards.insert(0, Card(sorted_cards[-1].suit, 1))
                 self.log.debug(f'sorted cards post insert: {sorted_cards}')
@@ -159,9 +165,9 @@ class Session:
                 #append high cards to fill the kickers array
                 self.log.debug(f'value streak: {streak}')
                 self.log.debug(f'suit streak: {suit_streak}')
-                prev_num = card.value
                 self.log.debug(f'prev suit: {prev_suit}')
-                if streak >= 5 and  suit_streak >= 5:
+                prev_num = card.value
+                if streak >= 5 and suit_streak >= 5:
                     if card.value == 14:
                         self.log.info(f'{card.suit} royal flush! ({player})')
                         range_ = reversed(range(card.value-4, card.value+1))
@@ -172,15 +178,6 @@ class Session:
                     range_ = reversed(range(card.value-4, card.value+1))
                     kickers[HandVal.STRAIGHT_FLUSH] = [i for i in range_]
                     handcounts[HandVal.STRAIGHT_FLUSH] = 1
-                elif suit_streak >= 5:
-                    inc = 0
-                    for card_ in sorted_cards[::-1]:
-                        self.log.debug(card_)
-                        self.log.debug(suit)
-                        if card_.suit == suit:
-                            kickers[HandVal.FLUSH][inc] = card_.value
-                            inc += 1
-                    print(kickers[HandVal.FLUSH])
                 elif streak >= 5:
                     self.log.debug(f'{card}-high straight! ({player})')
                     handcounts[HandVal.STRAIGHT] = 1
