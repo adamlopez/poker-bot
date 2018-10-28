@@ -91,13 +91,15 @@ class Session:
             if val_count == 2:
                 start = handcounts[HandVal.PAIR] * 2
                 end = start + 2
-                kickers[HandVal.PAIR][start:end] = [base_card.value ] * 2
+                kickers[HandVal.PAIR][start:end] = [base_card.value] * 2
                 handcounts[HandVal.PAIR] += 1
                 self.log.debug(f'pair kickers: {kickers[HandVal.PAIR]}')
                 self.log.info(f"pair! ({player})")
             elif val_count == 3:
-                kickers[HandVal.TRIPS][:3] = [base_card.value] * 3
+                start = handcounts[HandVal.TRIPS] * 3
+                end = start + 3
                 handcounts[HandVal.TRIPS] += 1
+                kickers[HandVal.TRIPS][start:end] = [base_card.value] * 3
                 self.log.info(f'trips! ({player})')
             elif val_count == 4:
                 kickers[HandVal.QUADS][0:4] = base_card.value
@@ -120,11 +122,15 @@ class Session:
             kickers[HandVal.FULL_HOUSE][:3] = kickers[HandVal.TRIPS][:3]
             kickers[HandVal.FULL_HOUSE][3:] = kickers[HandVal.PAIR][:2]
             self.log.info(f'full house! ({player})')
+        if handcounts[HandVal.TRIPS] >= 2:
+            handcounts[HandVal.FULL_HOUSE] += 1
+            kickers[HandVal.FULL_HOUSE] = sorted(kickers[HandVal.TRIPS])[:-6:-1]
+            self.log.info(f'two trips and full house! ({player})')
 
     # FIXME: needs to be broken up
     def get_best_hands(self):
         """returns a string representation of the best hands
-            each player holds. with the kcikers sorted from highest to lowest.
+            each player holds. with the kickers sorted from highest to lowest.
         """
         results = {}
         for player in self.players:

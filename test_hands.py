@@ -7,7 +7,7 @@ LOGGER = getLogger()
 
 def test_high_card():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -30,7 +30,7 @@ def test_high_card():
 
 def test_full_houses():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -59,7 +59,7 @@ def test_full_houses():
 
 def test_full_house2():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -88,7 +88,7 @@ def test_full_house2():
 
 def test_full_house3():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -107,9 +107,46 @@ def test_full_house3():
     assert res[sesh.players[1]][0] == HandVal.TWO_PAIR
     assert res[sesh.players[1]][1] == [12, 12, 8, 8, 13]
 
+def test_two_trips():
+    sesh = Session(LOGGER, player_count=2)
+    players = ['player1', 'player2']
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
+    sesh.setup_game()
+    sesh.players[0].hand[0] = Card('H', 12)
+    sesh.players[0].hand[1] = Card('C', 12)
+    sesh.players[1].hand[0] = Card('H', 2)
+    sesh.players[1].hand[1] = Card('D', 13)
+    sesh.community_cards[0] = Card('D', 12)
+    sesh.community_cards[1] = Card('D', 8)
+    sesh.community_cards[2] = Card('C', 8)
+    sesh.community_cards[3] = Card('S', 8)
+    sesh.community_cards[4] = Card('C', 11)
+    res = sesh.get_best_hands()
+    assert res[sesh.players[0]][0] == HandVal.FULL_HOUSE
+    assert res[sesh.players[0]][1] == [12, 12, 12, 8, 8]
+
+def test_two_trips2():
+    sesh = Session(LOGGER, player_count=2)
+    players = ['player1', 'player2']
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
+    sesh.setup_game()
+    sesh.players[0].hand[0] = Card('H', 12)
+    sesh.players[0].hand[1] = Card('C', 12)
+    sesh.players[1].hand[0] = Card('H', 2)
+    sesh.players[1].hand[1] = Card('D', 13)
+    sesh.community_cards[0] = Card('D', 12)
+    sesh.community_cards[1] = Card('D', 13)
+    sesh.community_cards[2] = Card('C', 13)
+    sesh.community_cards[3] = Card('S', 13)
+    sesh.community_cards[4] = Card('C', 11)
+    res = sesh.get_best_hands()
+    assert res[sesh.players[0]][0] == HandVal.FULL_HOUSE
+    assert res[sesh.players[0]][1] == [13, 13, 13, 12, 12]
 def test_pockets():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -130,7 +167,7 @@ def test_pockets():
 
 def test_three_pairs():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -151,7 +188,7 @@ def test_three_pairs():
 
 def test_three_pairs2():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -172,7 +209,7 @@ def test_three_pairs2():
 
 def test_flush_1():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -194,7 +231,7 @@ def test_flush_1():
 
 def test_flush_2():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -216,7 +253,7 @@ def test_flush_2():
 
 def test_straight_1():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -237,7 +274,7 @@ def test_straight_1():
 
 def test_ace_high_straight():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -258,7 +295,7 @@ def test_ace_high_straight():
 
 def test_ace_low_straight():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -285,7 +322,7 @@ def test_ace_low_straight():
 
 def test_straight_flush_1():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -311,7 +348,7 @@ def test_straight_flush_1():
 
 def test_straight_flush_2():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -332,7 +369,7 @@ def test_straight_flush_2():
 
 def test_royal_flush_1():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
@@ -359,7 +396,7 @@ def test_royal_flush_1():
 
 def test_royal_flush_2():
     sesh = Session(LOGGER, player_count=2)
-    players = ['Adam', 'Verina']
+    players = ['player1', 'player2']
     for i, player in enumerate(players):
         sesh.players[i].name = player
     sesh.setup_game()
