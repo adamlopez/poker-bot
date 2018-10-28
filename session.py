@@ -107,6 +107,10 @@ class Session:
         if handcounts[HandVal.PAIR] > 1:
             handcounts[HandVal.TWO_PAIR] += 1
             kickers[HandVal.TWO_PAIR] = sorted(kickers[HandVal.PAIR])[::-1]
+            if handcounts[HandVal.PAIR] > 2:
+                self.log.debug(f'more than two pairs. kickers pre-insertion: {kickers[HandVal.TWO_PAIR]}')
+                kickers[HandVal.TWO_PAIR] = kickers[HandVal.TWO_PAIR][:4] + [0]
+                self.log.debug(f'more than two pairs. kickers post-insertion: {kickers[HandVal.TWO_PAIR]}')
 
             self.log.info(f'two pair! ({player})')
             self.log.debug(f'two pair kickers: {kickers[HandVal.TWO_PAIR]}')
@@ -132,8 +136,6 @@ class Session:
 
             handcounts[HandVal.HIGH_CARD] = 1
             sorted_cards = sorted(cards, key=lambda card: card.value)
-            # handcounts[HandVal.HIGH_CARD] = sorted_cards[-1].value
-            # kickers[HandVal.HIGH_CARD] = sorted_cards[-5:][::-1]
             self._compute_pair_frequencies(player, handcounts, suitcounts, kickers)
             self.log.debug(f'sorted cards: {sorted_cards}')
             for suit, freq in suitcounts.items():

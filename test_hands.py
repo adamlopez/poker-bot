@@ -128,7 +128,71 @@ def test_pockets():
     assert res[sesh.players[1]][0] == HandVal.PAIR
     assert res[sesh.players[1]][1] == [10, 10, 13, 9, 8]
 
+def test_three_pairs():
+    sesh = Session(LOGGER, player_count=2)
+    players = ['Adam', 'Verina']
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
+    sesh.setup_game()
+    sesh.players[0].hand[0] = Card('H', 12)
+    sesh.players[0].hand[1] = Card('S', 12)
+    sesh.players[1].hand[0] = Card('C', 10)
+    sesh.players[1].hand[1] = Card('S', 10)
+    sesh.community_cards[0] = Card('H', 8)
+    sesh.community_cards[1] = Card('S', 13)
+    sesh.community_cards[2] = Card('C', 8)
+    sesh.community_cards[3] = Card('D', 7)
+    sesh.community_cards[4] = Card('C', 13)
+    res = sesh.get_best_hands()
+    assert res[sesh.players[0]][0] == HandVal.TWO_PAIR
+    assert res[sesh.players[0]][1] == [13, 13, 12, 12, 8]
+    assert res[sesh.players[1]][0] == HandVal.TWO_PAIR
+    assert res[sesh.players[1]][1] == [13, 13, 10, 10, 8]
+
+def test_three_pairs2():
+    sesh = Session(LOGGER, player_count=2)
+    players = ['Adam', 'Verina']
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
+    sesh.setup_game()
+    sesh.players[0].hand[0] = Card('H', 12)
+    sesh.players[0].hand[1] = Card('C', 13)
+    sesh.players[1].hand[0] = Card('C', 10)
+    sesh.players[1].hand[1] = Card('S', 10)
+    sesh.community_cards[0] = Card('H', 8)
+    sesh.community_cards[1] = Card('S', 13)
+    sesh.community_cards[2] = Card('C', 8)
+    sesh.community_cards[3] = Card('D', 7)
+    sesh.community_cards[4] = Card('C', 11)
+    res = sesh.get_best_hands()
+    assert res[sesh.players[0]][0] == HandVal.TWO_PAIR
+    assert res[sesh.players[0]][1] == [13, 13, 8, 8, 12]
+    assert res[sesh.players[1]][0] == HandVal.TWO_PAIR
+    assert res[sesh.players[1]][1] == [10, 10, 8, 8, 13]
+
 def test_flush_1():
+    sesh = Session(LOGGER, player_count=2)
+    players = ['Adam', 'Verina']
+    for i, player in enumerate(players):
+        sesh.players[i].name = player
+    sesh.setup_game()
+    sesh.players[0].hand[0] = Card('H', 12)
+    sesh.players[0].hand[1] = Card('S', 13)
+    sesh.players[1].hand[0] = Card('D', 3)
+    sesh.players[1].hand[1] = Card('D', 2)
+
+    sesh.community_cards[0] = Card('H', 10)
+    sesh.community_cards[1] = Card('C', 10)
+    sesh.community_cards[2] = Card('D', 5)
+    sesh.community_cards[3] = Card('D', 7)
+    sesh.community_cards[4] = Card('D', 12)
+    res = sesh.get_best_hands()
+    assert res[sesh.players[0]][0] == HandVal.TWO_PAIR
+    assert res[sesh.players[0]][1] == [12, 12, 10, 10, 13]
+    assert res[sesh.players[1]][0] == HandVal.FLUSH
+    assert res[sesh.players[1]][1] == [12, 7, 5, 3, 2]
+
+def test_flush_2():
     sesh = Session(LOGGER, player_count=2)
     players = ['Adam', 'Verina']
     for i, player in enumerate(players):
@@ -243,6 +307,7 @@ def test_straight_flush_1():
     assert res[sesh.players[1]][1][2] == 10
     assert res[sesh.players[1]][1][3] == 6
     assert res[sesh.players[1]][1][4] == 5
+    assert HandVal.STRAIGHT_FLUSH.value > HandVal.HIGH_CARD.value
 
 def test_straight_flush_2():
     sesh = Session(LOGGER, player_count=2)
