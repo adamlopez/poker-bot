@@ -45,17 +45,10 @@ def test_full_houses():
     sesh.community_cards[4] = Card('C', 12)
     res = sesh.get_best_hands()
     assert res[sesh.players[0]][0] == HandVal.FULL_HOUSE
-    assert res[sesh.players[0]][1][0] == 12
-    assert res[sesh.players[0]][1][1] == 12
-    assert res[sesh.players[0]][1][2] == 12
-    assert res[sesh.players[0]][1][3] == 10
-    assert res[sesh.players[0]][1][4] == 10
+    assert res[sesh.players[0]][1] == [12, 12, 12, 10, 10]
+
     assert res[sesh.players[1]][0] == HandVal.FULL_HOUSE
-    assert res[sesh.players[1]][1][0] == 10
-    assert res[sesh.players[1]][1][1] == 10
-    assert res[sesh.players[1]][1][2] == 10
-    assert res[sesh.players[1]][1][3] == 8
-    assert res[sesh.players[1]][1][4] == 8
+    assert res[sesh.players[1]][1] == [10, 10, 10, 8, 8]
 
 def test_full_house2():
     sesh = Session(LOGGER, player_count=2)
@@ -74,17 +67,9 @@ def test_full_house2():
     sesh.community_cards[4] = Card('C', 12)
     res = sesh.get_best_hands()
     assert res[sesh.players[0]][0] == HandVal.FULL_HOUSE
-    assert res[sesh.players[0]][1][0] == 10
-    assert res[sesh.players[0]][1][1] == 10
-    assert res[sesh.players[0]][1][2] == 10
-    assert res[sesh.players[0]][1][3] == 12
-    assert res[sesh.players[0]][1][4] == 12
+    assert res[sesh.players[0]][1] == [10, 10, 10, 12, 12]
     assert res[sesh.players[1]][0] == HandVal.FULL_HOUSE
-    assert res[sesh.players[1]][1][0] == 10
-    assert res[sesh.players[1]][1][1] == 10
-    assert res[sesh.players[1]][1][2] == 10
-    assert res[sesh.players[1]][1][3] == 8
-    assert res[sesh.players[1]][1][4] == 8
+    assert res[sesh.players[1]][1] == [10, 10, 10, 8, 8]
 
 def test_full_house3():
     sesh = Session(LOGGER, player_count=2)
@@ -314,11 +299,7 @@ def test_ace_low_straight():
         assert res[sesh.players[0]][1][5 - i] == i
     assert res[sesh.players[0]][1][-1] == 1 #ace
     assert res[sesh.players[1]][0] == HandVal.PAIR
-    assert res[sesh.players[1]][1][0] == 10
-    assert res[sesh.players[1]][1][1] == 10
-    assert res[sesh.players[1]][1][2] == 9
-    assert res[sesh.players[1]][1][3] == 8
-    assert res[sesh.players[1]][1][4] == 5
+    assert res[sesh.players[1]][1] == [10, 10, 9, 8, 5]
 
 def test_straight_flush_1():
     sesh = Session(LOGGER, player_count=2)
@@ -339,12 +320,7 @@ def test_straight_flush_1():
     assert res[sesh.players[0]][0] == HandVal.STRAIGHT_FLUSH
     assert res[sesh.players[0]][1] == [5, 4, 3, 2, 1]
     assert res[sesh.players[1]][0] == HandVal.PAIR
-    assert res[sesh.players[1]][1][0] == 9
-    assert res[sesh.players[1]][1][1] == 9
-    assert res[sesh.players[1]][1][2] == 10
-    assert res[sesh.players[1]][1][3] == 6
-    assert res[sesh.players[1]][1][4] == 5
-    assert HandVal.STRAIGHT_FLUSH.value > HandVal.HIGH_CARD.value
+    assert res[sesh.players[1]][1] == [9, 9, 10, 6, 5]
 
 def test_straight_flush_2():
     sesh = Session(LOGGER, player_count=2)
@@ -363,9 +339,9 @@ def test_straight_flush_2():
     sesh.community_cards[4] = Card('C', 10)
     res = sesh.get_best_hands()
     assert res[sesh.players[0]][0] == HandVal.PAIR
+    assert res[sesh.players[0]][1] == [10, 10, 8, 7, 5]
     assert res[sesh.players[1]][0] == HandVal.STRAIGHT_FLUSH
-    for i in reversed(range(2, 7)):
-        assert res[sesh.players[1]][1][6 - i] == i
+    assert res[sesh.players[1]][1] == [6, 5, 4, 3, 2]
 
 def test_royal_flush_1():
     sesh = Session(LOGGER, player_count=2)
@@ -385,14 +361,9 @@ def test_royal_flush_1():
     sesh.community_cards[4] = Card('D', 13)
     res = sesh.get_best_hands()
     assert res[sesh.players[0]][0] == HandVal.ROYAL_FLUSH
-    for i in reversed(range(10, 15)):
-        assert res[sesh.players[0]][1][14 - i] == i
+    assert res[sesh.players[0]][1] == [14, 13, 12, 11, 10]
     assert res[sesh.players[1]][0] == HandVal.FLUSH
-    assert res[sesh.players[1]][1][0] == 14
-    assert res[sesh.players[1]][1][1] == 13
-    assert res[sesh.players[1]][1][2] == 11
-    assert res[sesh.players[1]][1][3] == 7
-    assert res[sesh.players[1]][1][4] == 2
+    assert res[sesh.players[1]][1] == [14, 13, 11, 7, 2]
 
 def test_royal_flush_2():
     sesh = Session(LOGGER, player_count=2)
@@ -411,11 +382,9 @@ def test_royal_flush_2():
     sesh.community_cards[4] = Card('D', 13)
     res = sesh.get_best_hands()
     assert res[sesh.players[0]][0] == HandVal.ROYAL_FLUSH
-    for i in reversed(range(10, 15)):
-        assert res[sesh.players[0]][1][14 - i] == i
+    assert res[sesh.players[0]][1] == [14, 13, 12, 11, 10]
     assert res[sesh.players[1]][0] == HandVal.STRAIGHT
     assert res[sesh.players[1]][1] == [11, 10, 9, 8, 7]
 
 if __name__ == '__main__':
-    # test_full_house2()
     pytest.main(['test_hands.py'])
